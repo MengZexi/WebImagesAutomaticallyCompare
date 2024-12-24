@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Web_Image Automatic Comparing
 // @namespace    http://tampermonkey.net/
-// @version      v0.10
+// @version      v0.12
 // @description  Typesetting the contents of the clipboard
 // @author       Mozikiy
 // @match        http://annot.xhanz.cn/project/*/*
@@ -59,25 +59,47 @@
     // Function to populate images in the modal
     function populateImages(modal) {
         const images = document.querySelectorAll('.ant-image-img.css-3v32pk');
-        const imageCount = images.length;
         const content = modal.querySelector('#modalContent');
         content.innerHTML = ''; // Clear previous content
 
-        // Skip the first two images and add the rest to the modal
-        images.forEach((img, index) => {
-            if (index >= 2 && index < (imageCount - 2)/3 ) {
-                const imageClone = img.cloneNode(true);
-                imageClone.style.margin = '10px';
-                if (!content.contains(imageClone)) {
-                    content.appendChild(imageClone);
-                }
-            }
+        if (images.length < 7) {
+            content.textContent = 'Not enough images to display the required pattern!';
+            return;
+        }
+
+        // Resize and display images in the specified layout
+        const resizeWidth = '100px';
+        const resizeHeight = '100px';
+        const rows = [
+            [0, 1, 2, 2],
+            [0, 1, 3, 3],
+            [0, 1, 4, 4],
+            [0, 1, 5, 5],
+            [0, 1, 6, 6],
+        ];
+
+        rows.forEach((rowIndexes) => {
+            const rowDiv = document.createElement('div');
+            rowDiv.style.display = 'flex';
+            rowDiv.style.justifyContent = 'center';
+            rowDiv.style.marginBottom = '10px';
+
+            rowIndexes.forEach((index) => {
+                const img = images[index].cloneNode(true);
+                img.style.width = resizeWidth;
+                img.style.height = resizeHeight;
+                img.style.margin = '5px';
+                rowDiv.appendChild(img);
+            });
+
+            content.appendChild(rowDiv);
         });
 
         if (content.childElementCount === 0) {
             content.textContent = 'No images to display!';
         }
     }
+
 
     // Initialize modal
     const modal = createModal();

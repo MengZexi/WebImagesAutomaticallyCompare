@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Web_Image Automatic Comparing
 // @namespace    http://tampermonkey.net/
-// @version      v0.13
+// @version      v0.20
 // @description  Typesetting the contents of the clipboard
 // @author       Mozikiy
 // @match        http://annot.xhanz.cn/project/*/*
@@ -56,6 +56,62 @@
         return modal;
     }
 
+    function createDifferenceImage(img1, img2, resizeWidth = '350px', resizeHeight = '350px') {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+    
+        // 设置 canvas 尺寸与图片一致
+        canvas.width = parseInt(resizeWidth.replace('px', ''), 10);
+        canvas.height = parseInt(resizeHeight.replace('px', ''), 10);
+    
+        // 创建两个图片对象用于绘制
+        const image1 = new Image();
+        const image2 = new Image();
+    
+        // 设置跨域
+        image1.crossOrigin = 'anonymous';
+        image2.crossOrigin = 'anonymous';
+    
+        image1.src = img1.src;
+        image2.src = img2.src;
+    
+        // 在 canvas 上计算差异
+        image1.onload = () => {
+            ctx.drawImage(image1, 0, 0, canvas.width, canvas.height);
+    
+            image2.onload = () => {
+                const imgData1 = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(image2, 0, 0, canvas.width, canvas.height);
+                const imgData2 = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    
+                const diffData = ctx.createImageData(canvas.width, canvas.height);
+    
+                for (let i = 0; i < imgData1.data.length; i += 4) {
+                    // 计算每个像素点的 RGB 差异
+                    diffData.data[i] = Math.abs(imgData1.data[i] - imgData2.data[i]);     // R
+                    diffData.data[i + 1] = Math.abs(imgData1.data[i + 1] - imgData2.data[i + 1]); // G
+                    diffData.data[i + 2] = Math.abs(imgData1.data[i + 2] - imgData2.data[i + 2]); // B
+                    diffData.data[i + 3] = 255; // 不透明度
+                }
+    
+                // 将差异图绘制到 canvas 上
+                ctx.putImageData(diffData, 0, 0);
+            };
+    
+            image2.onerror = () => {
+                console.error("Failed to load image2 due to cross-origin restrictions.");
+            };
+        };
+    
+        image1.onerror = () => {
+            console.error("Failed to load image1 due to cross-origin restrictions.");
+        };
+    
+        return canvas;
+    }
+    
+
     // Function to populate images in the modal
     function populateImages(modal) {
         // const images = document.querySelectorAll('.ant-image-img.css-3v32pk');
@@ -79,6 +135,33 @@
         const resizeWidth = '350px';
         const resizeHeight = '350px';
 
+        // for (let row = 0; row < images_count - 2; row++) {
+        //     const rowDiv = document.createElement('div');
+        //     rowDiv.style.display = 'flex';
+        //     rowDiv.style.justifyContent = 'center';
+        //     rowDiv.style.marginBottom = '10px';
+        
+        //     for (let col = 0; col < 4; col++) { 
+
+        //         let index;
+        //         if (col === 0 || col === 1) {
+        //             index = col; // 第一列或第二列对应 0 或 1
+        //         } else {
+        //             index = row + 2; // 第三列或第四列计算索引
+        //         }
+
+        //         if (index >= uniqueImages.length) break;
+        
+        //         const img = uniqueImages[index].cloneNode(true);
+        //         img.style.width = resizeWidth;
+        //         img.style.height = resizeHeight;
+        //         img.style.margin = '5px';
+        //         rowDiv.appendChild(img);
+        //     }
+        
+        //     content.appendChild(rowDiv);
+        // }
+
         for (let row = 0; row < images_count - 2; row++) {
             const rowDiv = document.createElement('div');
             rowDiv.style.display = 'flex';
@@ -86,17 +169,22 @@
             rowDiv.style.marginBottom = '10px';
         
             for (let col = 0; col < 4; col++) { 
-
                 let index;
+                let img;
+        
                 if (col === 0 || col === 1) {
                     index = col; // 第一列或第二列对应 0 或 1
-                } else {
-                    index = row + 2; // 第三列或第四列计算索引
+                    img = uniqueImages[index].cloneNode(true);
+                } else if (col === 2) {
+                    index = row + 2; // 第三列显示对应行的图片
+                    img = uniqueImages[index].cloneNode(true);
+                } else if (col === 3) {
+                    // 计算第二列与第三列的差异图
+                    const secondImage = uniqueImages[1]; // 第二列图片
+                    const thirdImage = uniqueImages[row + 2]; // 第三列图片
+                    img = createDifferenceImage(secondImage, thirdImage, resizeWidth, resizeHeight);
                 }
-
-                if (index >= uniqueImages.length) break;
         
-                const img = uniqueImages[index].cloneNode(true);
                 img.style.width = resizeWidth;
                 img.style.height = resizeHeight;
                 img.style.margin = '5px';
@@ -105,12 +193,14 @@
         
             content.appendChild(rowDiv);
         }
+        
+        
 
         if (content.childElementCount === 0) {
             content.textContent = 'No images to display!';
         }
     }
-
+    
 
     // Initialize modal
     const modal = createModal();
@@ -126,5 +216,5 @@
 
 
     // Log script initialization
-    console.log('Web_Image Automatic Comparing : v0.13 Script Updated!');
+    console.log('Web_Image Automatic Comparing : v0.20 Script Updated!');
 })();

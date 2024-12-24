@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Web_Image Automatic Comparing
 // @namespace    http://tampermonkey.net/
-// @version      v0.30
+// @version      v0.40
 // @description  Typesetting the contents of the clipboard
 // @author       Mozikiy
 // @match        http://annot.xhanz.cn/project/*/*
@@ -22,8 +22,8 @@
         modal.style.top = '50%';
         modal.style.left = '50%';
         modal.style.transform = 'translate(-50%, -50%)';
-        modal.style.width = '90%';
-        modal.style.height = '90%';
+        modal.style.width = '100%';
+        modal.style.height = '100%';
         modal.style.backgroundColor = 'white';
         modal.style.zIndex = '10000';
         modal.style.boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.5)';
@@ -54,7 +54,7 @@
         return modal;
     }
 
-    function createDifferenceImage(img1, img2, resizeWidth = '350px', resizeHeight = '350px') {
+    function createDifferenceImage(img1, img2, resizeWidth = '400px', resizeHeight = '400px') {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
     
@@ -117,7 +117,6 @@
         return canvas;
     }
     
-
     // Function to populate images in the modal
     function populateImages(modal) {
         // const images = document.querySelectorAll('.ant-image-img.css-3v32pk');
@@ -138,8 +137,20 @@
         console.log('Unique images Length:', images_count);
 
         // Resize and display images in the specified layout
-        const resizeWidth = '350px';
-        const resizeHeight = '350px';
+        const resizeWidth = '400px';
+        const resizeHeight = '400px';
+
+
+        const radioGroups = document.querySelectorAll('div.ant-radio-group-outline');
+
+        // 定义状态映射表
+        const statusMapping = {
+            1: "未加载",
+            2: "加载但未加载元素",
+            3: "加载且已加载元素",
+            4: "其他加载",
+            5: "加载完成"
+        };
 
         for (let row = 0; row < images_count - 2; row++) {
             const rowDiv = document.createElement('div');
@@ -152,15 +163,14 @@
                 let img;
         
                 if (col === 0 || col === 1) {
-                    index = col; // 第一列或第二列对应 0 或 1
+                    index = col;
                     img = uniqueImages[index].cloneNode(true);
                 } else if (col === 2) {
-                    index = row + 2; // 第三列显示对应行的图片
+                    index = row + 2;
                     img = uniqueImages[index].cloneNode(true);
                 } else if (col === 3) {
-                    // 计算第二列与第三列的差异图
-                    const secondImage = uniqueImages[1]; // 第二列图片
-                    const thirdImage = uniqueImages[row + 2]; // 第三列图片
+                    const secondImage = uniqueImages[1]; 
+                    const thirdImage = uniqueImages[row + 2]; 
                     img = createDifferenceImage(secondImage, thirdImage, resizeWidth, resizeHeight);
                 }
         
@@ -180,12 +190,23 @@
             // Create and append 5 buttons
             for (let i = 1; i <= 5; i++) {
                 const button = document.createElement('button');
-                button.textContent = i;
+                button.textContent = statusMapping[i];
                 button.style.margin = '0 5px';
                 button.style.padding = '5px 10px';
                 button.style.cursor = 'pointer';
                 button.onclick = () => {
-                    console.log(`Button ${i} clicked for row ${row + 1}`);
+                    const group = radioGroups[row]; 
+                    if (group) {
+                        const radioInput = group.querySelector(`input[type="radio"][value="${i - 1}"]`);
+                        if (radioInput) {
+                            radioInput.click();
+                            console.log(`模拟选择了 row ${row + 1} 的 value=${i} 的选项`);
+                        } else {
+                            console.log(`row ${row + 1} 中没有 value=${i} 的选项`);
+                        }
+                    } else {
+                        console.log(`没有找到对应 row ${row + 1} 的 radioGroup`);
+                    }
                 };
                 buttonGroupDiv.appendChild(button);
             }
@@ -194,8 +215,6 @@
             content.appendChild(buttonGroupDiv);
         }
         
-        
-
         if (content.childElementCount === 0) {
             content.textContent = 'No images to display!';
         }
@@ -215,27 +234,15 @@
     });
 
 
+    // Add event listener for CTRL+B
     document.addEventListener('keydown', (event) => {
-        // 检测是否按下 Ctrl + J
-        if (event.ctrlKey && event.key === 'j') {
-            // 获取所有包含 6 个选项的单选框组
-            const radioGroups = document.querySelectorAll('div.ant-radio-group-outline');
-            
-            // 遍历每组选项，模拟选择 value=4 的选项
-            radioGroups.forEach(group => {
-                const radioInput = group.querySelector('input[type="radio"][value="4"]');
-                if (radioInput) {
-                    // 模拟点击操作
-                    radioInput.click();
-                    console.log('模拟选择了 value=4 的选项');
-                }
-            });
+        if (event.ctrlKey && event.key === 'b') {
+            event.preventDefault();
+            // populateImages(modal);
+            modal.style.display = 'none';
         }
     });
-    
-    
-
 
     // Log script initialization
-    console.log('Web_Image Automatic Comparing : v0.30 Script Updated!');
+    console.log('Web_Image Automatic Comparing : v0.40 Script Updated!');
 })();

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Web_Image Automatic Comparing
 // @namespace    http://tampermonkey.net/
-// @version      v0.21
+// @version      v0.30
 // @description  Typesetting the contents of the clipboard
 // @author       Mozikiy
 // @match        http://annot.xhanz.cn/project/*/*
@@ -215,6 +215,27 @@
     });
 
 
+    document.addEventListener('keydown', (event) => {
+        // 检测是否按下 Ctrl + J
+        if (event.ctrlKey && event.key === 'j') {
+            // 获取所有包含 6 个选项的单选框组
+            const radioGroups = document.querySelectorAll('div.ant-radio-group-outline');
+            
+            // 遍历每组选项，模拟选择 value=4 的选项
+            radioGroups.forEach(group => {
+                const radioInput = group.querySelector('input[type="radio"][value="4"]');
+                if (radioInput) {
+                    // 模拟点击操作
+                    radioInput.click();
+                    console.log('模拟选择了 value=4 的选项');
+                }
+            });
+        }
+    });
+    
+    
+
+
     // Log script initialization
-    console.log('Web_Image Automatic Comparing : v0.21 Script Updated!');
+    console.log('Web_Image Automatic Comparing : v0.30 Script Updated!');
 })();

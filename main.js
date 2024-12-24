@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Web_Image Automatic Comparing
 // @namespace    http://tampermonkey.net/
-// @version      v0.20
+// @version      v0.21
 // @description  Typesetting the contents of the clipboard
 // @author       Mozikiy
 // @match        http://annot.xhanz.cn/project/*/*
@@ -12,8 +12,6 @@
 
 (function () {
     'use strict';
-
-    
 
     // Function to create a modal popup
     function createModal() {
@@ -75,12 +73,16 @@
         image1.src = img1.src;
         image2.src = img2.src;
     
-        // 在 canvas 上计算差异
-        image1.onload = () => {
-            ctx.drawImage(image1, 0, 0, canvas.width, canvas.height);
+        let loadedCount = 0;
     
-            image2.onload = () => {
+        // 图片加载完成后的回调函数
+        const onLoadCallback = () => {
+            loadedCount++;
+            if (loadedCount === 2) {
+                // 当两张图片都加载完成后计算差异
+                ctx.drawImage(image1, 0, 0, canvas.width, canvas.height);
                 const imgData1 = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.drawImage(image2, 0, 0, canvas.width, canvas.height);
                 const imgData2 = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -89,7 +91,7 @@
     
                 for (let i = 0; i < imgData1.data.length; i += 4) {
                     // 计算每个像素点的 RGB 差异
-                    diffData.data[i] = Math.abs(imgData1.data[i] - imgData2.data[i]);     // R
+                    diffData.data[i] = Math.abs(imgData1.data[i] - imgData2.data[i]); // R
                     diffData.data[i + 1] = Math.abs(imgData1.data[i + 1] - imgData2.data[i + 1]); // G
                     diffData.data[i + 2] = Math.abs(imgData1.data[i + 2] - imgData2.data[i + 2]); // B
                     diffData.data[i + 3] = 255; // 不透明度
@@ -97,15 +99,19 @@
     
                 // 将差异图绘制到 canvas 上
                 ctx.putImageData(diffData, 0, 0);
-            };
-    
-            image2.onerror = () => {
-                console.error("Failed to load image2 due to cross-origin restrictions.");
-            };
+            }
         };
     
+        // 为两张图片绑定 onload 事件
+        image1.onload = onLoadCallback;
+        image2.onload = onLoadCallback;
+    
+        // 为两张图片绑定 onerror 事件
         image1.onerror = () => {
             console.error("Failed to load image1 due to cross-origin restrictions.");
+        };
+        image2.onerror = () => {
+            console.error("Failed to load image2 due to cross-origin restrictions.");
         };
     
         return canvas;
@@ -134,33 +140,6 @@
         // Resize and display images in the specified layout
         const resizeWidth = '350px';
         const resizeHeight = '350px';
-
-        // for (let row = 0; row < images_count - 2; row++) {
-        //     const rowDiv = document.createElement('div');
-        //     rowDiv.style.display = 'flex';
-        //     rowDiv.style.justifyContent = 'center';
-        //     rowDiv.style.marginBottom = '10px';
-        
-        //     for (let col = 0; col < 4; col++) { 
-
-        //         let index;
-        //         if (col === 0 || col === 1) {
-        //             index = col; // 第一列或第二列对应 0 或 1
-        //         } else {
-        //             index = row + 2; // 第三列或第四列计算索引
-        //         }
-
-        //         if (index >= uniqueImages.length) break;
-        
-        //         const img = uniqueImages[index].cloneNode(true);
-        //         img.style.width = resizeWidth;
-        //         img.style.height = resizeHeight;
-        //         img.style.margin = '5px';
-        //         rowDiv.appendChild(img);
-        //     }
-        
-        //     content.appendChild(rowDiv);
-        // }
 
         for (let row = 0; row < images_count - 2; row++) {
             const rowDiv = document.createElement('div');
@@ -192,6 +171,27 @@
             }
         
             content.appendChild(rowDiv);
+             // Add a button group for the row
+            const buttonGroupDiv = document.createElement('div');
+            buttonGroupDiv.style.display = 'flex';
+            buttonGroupDiv.style.justifyContent = 'center';
+            buttonGroupDiv.style.marginTop = '5px';
+
+            // Create and append 5 buttons
+            for (let i = 1; i <= 5; i++) {
+                const button = document.createElement('button');
+                button.textContent = i;
+                button.style.margin = '0 5px';
+                button.style.padding = '5px 10px';
+                button.style.cursor = 'pointer';
+                button.onclick = () => {
+                    console.log(`Button ${i} clicked for row ${row + 1}`);
+                };
+                buttonGroupDiv.appendChild(button);
+            }
+
+            // Append the button group after the rowDiv
+            content.appendChild(buttonGroupDiv);
         }
         
         
@@ -216,5 +216,5 @@
 
 
     // Log script initialization
-    console.log('Web_Image Automatic Comparing : v0.20 Script Updated!');
+    console.log('Web_Image Automatic Comparing : v0.21 Script Updated!');
 })();

@@ -13,6 +13,9 @@ Use Ctrl + H to open it
 And you can use Ctrl + B to turn it off
 
 
+You can watch a demo video to use it！！！
+
+
 
 
 

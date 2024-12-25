@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Web_Image Automatic Comparing
 // @namespace    http://tampermonkey.net/
-// @version      v0.50
+// @version      v0.52
 // @description  Typesetting the contents of the clipboard
 // @author       Mozikiy
 // @match        http://annot.xhanz.cn/project/*/*
@@ -287,5 +287,5 @@
     });
 
     // Log script initialization
-    console.log('Web_Image Automatic Comparing : v0.50 Script Updated!');
+    console.log('Web_Image Automatic Comparing : v0.52 Script Updated!');
 })();

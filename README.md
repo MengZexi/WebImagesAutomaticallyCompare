@@ -1,8 +1,6 @@
 ## WebImagesAutomaticallyCompare
 
-<video width="80%" controls>
-    <source src="demo.mp4" type="video/mp4">
-</video>
+![Demo](demo.gif)
 
 This script is used to assist in manual tagging.
 

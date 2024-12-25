@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Web_Image Automatic Comparing
 // @namespace    http://tampermonkey.net/
-// @version      v0.40
+// @version      v0.41
 // @description  Typesetting the contents of the clipboard
 // @author       Mozikiy
 // @match        http://annot.xhanz.cn/project/*/*
@@ -195,17 +195,36 @@
                 button.style.padding = '5px 10px';
                 button.style.cursor = 'pointer';
                 button.onclick = () => {
-                    const group = radioGroups[row]; 
-                    if (group) {
-                        const radioInput = group.querySelector(`input[type="radio"][value="${i - 1}"]`);
-                        if (radioInput) {
-                            radioInput.click();
-                            console.log(`模拟选择了 row ${row + 1} 的 value=${i} 的选项`);
-                        } else {
-                            console.log(`row ${row + 1} 中没有 value=${i} 的选项`);
+                    if( i == 5 ){
+                        for(let r = row; r < images_count - 2; r++){
+                            const group = radioGroups[r]; 
+                            if (group) {
+                                const radioInput = group.querySelector(`input[type="radio"][value="${i - 1}"]`);
+                                if (radioInput) {
+                                    radioInput.click();
+                                    console.log(`模拟选择了 row ${row + 1} 的 value=${i} 的选项`);
+                                } else {
+                                    console.log(`row ${row + 1} 中没有 value=${i} 的选项`);
+                                }
+                            } else {
+                                console.log(`没有找到对应 row ${row + 1} 的 radioGroup`);
+                            }
                         }
-                    } else {
-                        console.log(`没有找到对应 row ${row + 1} 的 radioGroup`);
+                        modal.style.display = 'none';
+                    }
+                    else{
+                        const group = radioGroups[row]; 
+                        if (group) {
+                            const radioInput = group.querySelector(`input[type="radio"][value="${i - 1}"]`);
+                            if (radioInput) {
+                                radioInput.click();
+                                console.log(`模拟选择了 row ${row + 1} 的 value=${i} 的选项`);
+                            } else {
+                                console.log(`row ${row + 1} 中没有 value=${i} 的选项`);
+                            }
+                        } else {
+                            console.log(`没有找到对应 row ${row + 1} 的 radioGroup`);
+                        }
                     }
                 };
                 buttonGroupDiv.appendChild(button);
@@ -244,5 +263,5 @@
     });
 
     // Log script initialization
-    console.log('Web_Image Automatic Comparing : v0.40 Script Updated!');
+    console.log('Web_Image Automatic Comparing : v0.41 Script Updated!');
 })();

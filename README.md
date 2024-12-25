@@ -1,22 +1,14 @@
 ## WebImagesAutomaticallyCompare
 
+<video width="80%" controls>
+    <source src="demo.mp4" type="video/mp4">
+</video>
+
+This script is used to assist in manual tagging.
+
+Use `Ctrl + H` to **Open**
 
 
-Used to assist in manual tagging
+Use `Ctrl + B` to **Turn off**
 
-Adopt the Tampermonkey script, if you are not familiar with it, you can learn in bilibili, very simple!
-
-
-Use Ctrl + H to open it
-
-
-And you can use Ctrl + B to turn it off
-
-
-You can watch a demo video to use it！！！
-
-
-
-
-
-
+Enjoy it!~

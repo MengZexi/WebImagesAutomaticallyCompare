@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Web_Image Automatic Comparing
 // @namespace    http://tampermonkey.net/
-// @version      v0.53
+// @version      v0.60
 // @description  Typesetting the contents of the clipboard
 // @author       Mozikiy
 // @match        http://annot.xhanz.cn/project/*/*
@@ -25,12 +25,25 @@
         modal.style.width = '100%';
         modal.style.height = '100%';
         modal.style.backgroundColor = 'white';
-        modal.style.zIndex = '10000';
+        modal.style.zIndex = '9998';
         modal.style.boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.5)';
         modal.style.overflowY = 'scroll';
         modal.style.padding = '20px';
         modal.style.borderRadius = '8px';
         modal.style.display = 'none';
+
+        // Create close button
+        const closeButton = document.createElement('button');
+        closeButton.textContent = 'Close';
+        closeButton.style.position = 'absolute';
+        closeButton.style.top = '10px';
+        closeButton.style.right = '10px';
+        closeButton.style.padding = '5px 10px';
+        closeButton.style.cursor = 'pointer';
+        closeButton.onclick = () => {
+            modal.style.display = 'none';
+        };
+        modal.appendChild(closeButton);
 
         // Create content container for images
         const content = document.createElement('div');
@@ -175,11 +188,11 @@
             rowDiv.style.justifyContent = 'space-between'; // 均匀分布
             rowDiv.style.flexWrap = 'wrap'; // 允许换行
             rowDiv.style.marginBottom = '10px';
-
+        
             for (let col = 0; col < 4; col++) {
                 let index;
                 let img;
-
+        
                 if (col === 0 || col === 1) {
                     index = col;
                     img = uniqueImages[index].cloneNode(true);
@@ -191,21 +204,76 @@
                     const thirdImage = uniqueImages[row + 2];
                     img = createDifferenceImage(secondImage, thirdImage, resizeWidth, resizeHeight);
                 }
-
+        
                 img.style.width = 'calc(25% - 10px)'; // 使每个图像宽度占据 25% 的空间，减去间隙
                 img.style.height = 'auto'; // 高度自动调整，保持比例
                 img.style.margin = '5px'; // 图片之间的间距
+        
+                // 添加点击事件，显示原图
+                img.onclick = () => {
+                    // 创建模态框
+                    const modal = document.createElement('div');
+                    modal.style.position = 'fixed';
+                    modal.style.top = '0';
+                    modal.style.left = '0';
+                    modal.style.width = '100%';
+                    modal.style.height = '100%';
+                    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+                    modal.style.display = 'flex';
+                    modal.style.justifyContent = 'center';
+                    modal.style.alignItems = 'center';
+                    modal.style.zIndex = '9999'; // 确保在最顶层
+                    modal.style.flexDirection = 'column';
+                    modal.style.overflow = 'hidden';
+                
+                    // 创建关闭按钮
+                    const closeButton = document.createElement('div');
+                    closeButton.textContent = 'X';
+                    closeButton.style.position = 'absolute';
+                    closeButton.style.top = '20px';
+                    closeButton.style.right = '20px';
+                    closeButton.style.fontSize = '24px';
+                    closeButton.style.color = 'white';
+                    closeButton.style.cursor = 'pointer';
+                    closeButton.style.fontWeight = 'bold';
+                    closeButton.onclick = () => {
+                        modal.remove();
+                    };
+                
+                    // 创建图片
+                    const fullSizeImg = document.createElement('img');
+                    fullSizeImg.src = img.src; // 使用当前图片的源
+                    fullSizeImg.style.maxWidth = '90%';
+                    fullSizeImg.style.maxHeight = '90%';
+                    fullSizeImg.style.border = '2px solid white';
+                    fullSizeImg.style.objectFit = 'contain';
+                
+                    // 点击模态框的背景关闭
+                    modal.onclick = (event) => {
+                        if (event.target === modal) {
+                            modal.remove();
+                        }
+                    };
+                
+                    // 将关闭按钮和图片添加到模态框
+                    modal.appendChild(closeButton);
+                    modal.appendChild(fullSizeImg);
+                
+                    // 将模态框添加到文档的最顶层
+                    document.body.appendChild(modal);
+                };
+        
                 rowDiv.appendChild(img);
             }
-
+        
             content.appendChild(rowDiv);
-
+        
             // Add a button group for the row
             const buttonGroupDiv = document.createElement('div');
             buttonGroupDiv.style.display = 'flex';
             buttonGroupDiv.style.justifyContent = 'center';
             buttonGroupDiv.style.marginTop = '5px';
-
+        
             // Create and append 5 buttons
             for (let i = 1; i <= 6; i++) {
                 const button = document.createElement('button');
@@ -242,10 +310,11 @@
                 };
                 buttonGroupDiv.appendChild(button);
             }
-
+        
             // Append the button group after the rowDiv
             content.appendChild(buttonGroupDiv);
         }
+        
 
         if (content.childElementCount === 0) {
             content.textContent = 'No images to display!';
@@ -274,5 +343,5 @@
     });
 
     // Log script initialization
-    console.log('Web_Image Automatic Comparing : v0.50 Script Updated!');
+    console.log('Web_Image Automatic Comparing : v0.60 Script Updated!');
 })();

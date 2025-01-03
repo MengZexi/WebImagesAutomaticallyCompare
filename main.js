@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         Web_Image Automatic Comparing
 // @namespace    http://tampermonkey.net/
-// @version      v0.61
+// @version      v0.62
 // @description  Typesetting the contents of the clipboard
 // @author       Mozikiy
 // @match        http://annot.xhanz.cn/project/*/*
+// @match        https://annot.aminer.cn/project/*/*
 // @icon         https://www.latex-project.org/favicon.ico
 // @license      GNU GPLv3
 // @grant        none
@@ -345,5 +346,5 @@
     });
 
     // Log script initialization
-    console.log('Web_Image Automatic Comparing : v0.61 Script Updated!');
+    console.log('Web_Image Automatic Comparing : v0.62 Script Updated!');
 })();

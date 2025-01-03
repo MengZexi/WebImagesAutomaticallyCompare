@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Web_Image Automatic Comparing
 // @namespace    http://tampermonkey.net/
-// @version      v0.60
+// @version      v0.61
 // @description  Typesetting the contents of the clipboard
 // @author       Mozikiy
 // @match        http://annot.xhanz.cn/project/*/*
@@ -209,59 +209,61 @@
                 img.style.height = 'auto'; // 高度自动调整，保持比例
                 img.style.margin = '5px'; // 图片之间的间距
         
-                // 添加点击事件，显示原图
-                img.onclick = () => {
-                    // 创建模态框
-                    const modal = document.createElement('div');
-                    modal.style.position = 'fixed';
-                    modal.style.top = '0';
-                    modal.style.left = '0';
-                    modal.style.width = '100%';
-                    modal.style.height = '100%';
-                    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-                    modal.style.display = 'flex';
-                    modal.style.justifyContent = 'center';
-                    modal.style.alignItems = 'center';
-                    modal.style.zIndex = '9999'; // 确保在最顶层
-                    modal.style.flexDirection = 'column';
-                    modal.style.overflow = 'hidden';
-                
-                    // 创建关闭按钮
-                    const closeButton = document.createElement('div');
-                    closeButton.textContent = 'X';
-                    closeButton.style.position = 'absolute';
-                    closeButton.style.top = '20px';
-                    closeButton.style.right = '20px';
-                    closeButton.style.fontSize = '24px';
-                    closeButton.style.color = 'white';
-                    closeButton.style.cursor = 'pointer';
-                    closeButton.style.fontWeight = 'bold';
-                    closeButton.onclick = () => {
-                        modal.remove();
-                    };
-                
-                    // 创建图片
-                    const fullSizeImg = document.createElement('img');
-                    fullSizeImg.src = img.src; // 使用当前图片的源
-                    fullSizeImg.style.maxWidth = '90%';
-                    fullSizeImg.style.maxHeight = '90%';
-                    fullSizeImg.style.border = '2px solid white';
-                    fullSizeImg.style.objectFit = 'contain';
-                
-                    // 点击模态框的背景关闭
-                    modal.onclick = (event) => {
-                        if (event.target === modal) {
+                if(col !== 3) {
+                    // 添加点击事件，显示原图
+                    img.onclick = () => {
+                        // 创建模态框
+                        const modal = document.createElement('div');
+                        modal.style.position = 'fixed';
+                        modal.style.top = '0';
+                        modal.style.left = '0';
+                        modal.style.width = '100%';
+                        modal.style.height = '100%';
+                        modal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+                        modal.style.display = 'flex';
+                        modal.style.justifyContent = 'center';
+                        modal.style.alignItems = 'center';
+                        modal.style.zIndex = '9999'; // 确保在最顶层
+                        modal.style.flexDirection = 'column';
+                        modal.style.overflow = 'hidden';
+                    
+                        // 创建关闭按钮
+                        const closeButton = document.createElement('div');
+                        closeButton.textContent = 'X';
+                        closeButton.style.position = 'absolute';
+                        closeButton.style.top = '20px';
+                        closeButton.style.right = '20px';
+                        closeButton.style.fontSize = '24px';
+                        closeButton.style.color = 'white';
+                        closeButton.style.cursor = 'pointer';
+                        closeButton.style.fontWeight = 'bold';
+                        closeButton.onclick = () => {
                             modal.remove();
-                        }
+                        };
+                    
+                        // 创建图片
+                        const fullSizeImg = document.createElement('img');
+                        fullSizeImg.src = img.src; // 使用当前图片的源
+                        fullSizeImg.style.maxWidth = '90%';
+                        fullSizeImg.style.maxHeight = '90%';
+                        fullSizeImg.style.border = '2px solid white';
+                        fullSizeImg.style.objectFit = 'contain';
+                    
+                        // 点击模态框的背景关闭
+                        modal.onclick = (event) => {
+                            if (event.target === modal) {
+                                modal.remove();
+                            }
+                        };
+                    
+                        // 将关闭按钮和图片添加到模态框
+                        modal.appendChild(closeButton);
+                        modal.appendChild(fullSizeImg);
+                    
+                        // 将模态框添加到文档的最顶层
+                        document.body.appendChild(modal);
                     };
-                
-                    // 将关闭按钮和图片添加到模态框
-                    modal.appendChild(closeButton);
-                    modal.appendChild(fullSizeImg);
-                
-                    // 将模态框添加到文档的最顶层
-                    document.body.appendChild(modal);
-                };
+                }
         
                 rowDiv.appendChild(img);
             }
@@ -343,5 +345,5 @@
     });
 
     // Log script initialization
-    console.log('Web_Image Automatic Comparing : v0.60 Script Updated!');
+    console.log('Web_Image Automatic Comparing : v0.61 Script Updated!');
 })();

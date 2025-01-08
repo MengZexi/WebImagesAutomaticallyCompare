@@ -13,7 +13,7 @@
 
 
 ---
-[v0.63]Our first publicly released version supports image comparison, quick button selection, and adaptive interface features.
+[v0.53]Our first publicly released version supports image comparison, quick button selection, and adaptive interface features.
 
 [![Demo](demo.gif)](https://pan.baidu.com/s/14RaAgfdfjQKsbHBnRuDfFg?pwd=4321)
 
